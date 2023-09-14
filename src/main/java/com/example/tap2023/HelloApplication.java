@@ -55,6 +55,9 @@ public class HelloApplication extends Application {
         borderPane.setTop(menuBar);
 
         escena = new Scene(borderPane, 200, 300);
+        escena.getStylesheets()
+                .add(getClass().getResource("/estilos/estilos.css") //la primer diagonal representa la ruta resources
+                .toString());
         stage.setScene(escena);
         stage.setMaximized(true);
         stage.show();

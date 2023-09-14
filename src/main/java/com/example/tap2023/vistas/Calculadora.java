@@ -26,6 +26,9 @@ public class Calculadora extends Stage {
     public Calculadora() {
         CrearUI();
         escena = new Scene(vBox, 200, 200);
+        escena.getStylesheets()
+                .add(getClass().getResource("/estilos/calculadora.css") //la primer diagonal representa la ruta resources
+                        .toString());
         this.setTitle("Calculadora");
         this.setScene(escena);
         this.show();
