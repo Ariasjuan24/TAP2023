@@ -1,5 +1,6 @@
 package com.example.tap2023.vistas;
 
+import javafx.scene.control.Alert;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -16,7 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.*;
-
+// antes de la modificación escribí esto
 public class Loteria extends Stage {
     private Scene escena;
     private HBox hPrincipal, hBtnSeleccion;
@@ -29,9 +30,44 @@ public class Loteria extends Stage {
     private Set<Integer> imagenesMostradas = new HashSet<>();
     private boolean tablillaBloqueada = false;
     private int clicksEnSiguiente = 0; //Contador de Clicks en ">"
-    private String[] tablillaAnterior; //Almacena la tablilla Anterior
-    private List<String[]> todasTablillas = new ArrayList<>();
     private int indiceTablillaActual = 0;
+    private int botonesMarcados = 0;
+    private int cartasMostradas = 0;
+
+
+
+    private String[][] tablillasPredefinidas = {
+            {
+                    "01 Gallo.png", "2loteria.jpg", "3loteria.jpg", "4loteria.jpg",
+                    "5loteria.jpg", "6loteria.jpg", "7loteria.jpg", "8loteria.jpg",
+                    "9loteria.jpg", "10loteria.jpg", "11loteria.jpg", "12loteria.jpg",
+                    "13loteria.jpg", "14loteria.jpg", "15loteria.jpg", "16loteria.jpg"
+            },
+            {
+                    "17loteria.jpg", "18loteria.jpg", "19loteria.jpg", "20loteria.jpg",
+                    "21loteria.jpg", "22loteria.jpg", "23loteria.jpg", "24loteria.jpg",
+                    "25loteria.jpg", "26loteria.jpg", "27loteria.jpg", "28loteria.jpg",
+                    "29loteria.jpg", "30loteria.jpg", "31loteria.jpg", "32loteria.jpg"
+            },
+            {
+                    "33loteria.jpg", "34loteria.jpg", "35loteria.jpg", "36loteria.jpg",
+                    "37loteria.jpg", "38loteria.jpg", "39loteria.jpg", "40loteria.jpg",
+                    "41loteria.jpg", "42loteria.jpg", "43loteria.jpg", "44loteria.jpg",
+                    "45loteria.jpg", "46loteria.jpg", "47loteria.jpg", "48loteria.jpg"
+            },
+            {
+                    "49loteria.jpg", "50loteria.jpg", "51loteria.jpg", "52loteria.jpg",
+                    "53loteria.jpg", "54loteria.jpg", "01 Gallo.png", "2loteria.jpg",
+                    "3loteria.jpg", "4loteria.jpg", "5loteria.jpg", "6loteria.jpg",
+                    "7loteria.jpg", "8loteria.jpg", "9loteria.jpg", "10loteria.jpg"
+            },
+            {
+                    "11loteria.jpg", "12loteria.jpg", "13loteria.jpg", "14loteria.jpg",
+                    "15loteria.jpg", "16loteria.jpg", "17loteria.jpg", "18loteria.jpg",
+                    "19loteria.jpg", "20loteria.jpg", "21loteria.jpg", "22loteria.jpg",
+                    "23loteria.jpg", "24loteria.jpg", "25loteria.jpg", "26loteria.jpg"
+            }
+    };
 
 
 
@@ -41,6 +77,38 @@ public class Loteria extends Stage {
         this.setTitle("Loteria");
         this.setScene(escena);
         this.show();
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                final int fila = i;
+                final int columna = j;
+                arBtnTablilla[i][j].setOnAction(event -> {
+                    if (!tablillaBloqueada && !arBtnTablilla[fila][columna].isDisabled()) {
+                        arBtnTablilla[fila][columna].setDisable(true);
+                        botonesMarcados++;
+
+                        // Verificar si se han marcado todos los botones
+                        if (botonesMarcados == 16) {
+                            mostrarMensajeGanador();
+                        }
+                    }
+                });
+            }
+        }
+
+    }
+
+    private void mostrarMensajeGanador() {
+
+        detenerTemporizador();
+
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("¡Felicidades!");
+            alert.setHeaderText(null);
+            alert.setContentText("¡Has ganado!");
+            alert.showAndWait();
+        });
     }
 
     private void CrearUI() {
@@ -50,16 +118,13 @@ public class Loteria extends Stage {
         btnAnterior = new Button("<");
         btnAnterior.setPrefSize(200, 100);
 
+
         btnSiguiente = new Button(">");
         btnSiguiente.setPrefSize(200, 100);
 
         btnAnterior.setDisable(true); //Bloquea el botón en la primera Tablilla
         btnAnterior.setOnAction(event-> mostrarTablillaAnterior()); //Maneja el evento del botón "<"
-        btnSiguiente.setOnAction(event -> {
-            if (clicksEnSiguiente < 5) {
-                reordenarTablillaAleatoriamente();
-            }
-        });
+        btnSiguiente.setOnAction(event -> mostrarTablillaSiguiente());
 
         hBtnSeleccion = new HBox(btnAnterior, btnSiguiente);
         vTablilla = new VBox(grdTablilla, hBtnSeleccion);
@@ -75,97 +140,47 @@ public class Loteria extends Stage {
 
     }
 
-    private void mostrarTablillaAnterior() {
-        //if (tablillaAnterior != null) {
-            // Actualizar las imágenes en los botones usando tablillaAnterior
-        if (indiceTablillaActual > 0) {
-            indiceTablillaActual--;
-            String[] tablillaAnterior = todasTablillas.get(indiceTablillaActual);
-
-            int pos = 0;
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    try {
-                        InputStream stream = new FileInputStream("src/main/java/com/example/tap2023/imagenes/" + tablillaAnterior[pos]);
-                        Image imgCartaP = new Image(stream);
-                        ImageView imv = new ImageView(imgCartaP);
-                        arBtnTablilla[i][j].setGraphic(imv);
-                        pos++;
-                        imv.setFitHeight(120);
-                        imv.setFitWidth(80);
-                        imv.setPreserveRatio(true); // Mantener la proporción de la imagen
-                        imv.setSmooth(true); // Mejorar la calidad de visualización
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-            // Restaurar el estado del botón "<" a habilitado si no estás en la primera tablilla
-            btnAnterior.setDisable(indiceTablillaActual ==0);
-            btnSiguiente.setDisable(false);
-            //clicksEnSiguiente = 0; // Reiniciar el contador de clics en ">"
-            //btnSiguiente.setDisable(false); // Habilitar el botón ">"
+    private void mostrarTablillaSiguiente() {
+        if (indiceTablillaActual < tablillasPredefinidas.length - 1) {
+            indiceTablillaActual++;
+            mostrarTablilla(indiceTablillaActual);
+            btnAnterior.setDisable(false);
+            clicksEnSiguiente = 0;
         }
-
-
+        btnSiguiente.setDisable(indiceTablillaActual == tablillasPredefinidas.length - 1);
     }
 
-
-    private void reordenarTablillaAleatoriamente() {
-        String[] arImagenes = {"01 Gallo.png", "2loteria.jpg", "3loteria.jpg", "4loteria.jpg", "5loteria.jpg",
-                "6loteria.jpg", "7loteria.jpg", "8loteria.jpg", "9loteria.jpg", "10loteria.jpg",
-                "11loteria.jpg", "12loteria.jpg", "13loteria.jpg", "14loteria.jpg", "15loteria.jpg",
-                "16loteria.jpg", "17loteria.jpg", "18loteria.jpg", "19loteria.jpg", "20loteria.jpg",
-                "21loteria.jpg", "22loteria.jpg", "23loteria.jpg", "24loteria.jpg", "25loteria.jpg",
-                "26loteria.jpg", "27loteria.jpg", "28loteria.jpg", "29loteria.jpg", "30loteria.jpg",
-                "31loteria.jpg", "32loteria.jpg", "33loteria.jpg", "34loteria.jpg", "35loteria.jpg",
-                "36loteria.jpg", "37loteria.jpg", "38loteria.jpg", "39loteria.jpg", "40loteria.jpg",
-                "41loteria.jpg", "42loteria.jpg", "43loteria.jpg", "44loteria.jpg", "45loteria.jpg",
-                "46loteria.jpg", "47loteria.jpg", "48loteria.jpg", "49loteria.jpg", "50loteria.jpg",
-                "51loteria.jpg", "52loteria.jpg", "53loteria.jpg", "54loteria.jpg"};
-
-        clicksEnSiguiente++;
-        if (clicksEnSiguiente >= 5) {
-            btnSiguiente.setDisable(true); // Bloquear ">" después del quinto click
+    private void mostrarTablillaAnterior() {
+        if (indiceTablillaActual > 0) {
+            indiceTablillaActual--;
+            mostrarTablilla(indiceTablillaActual);
+            btnSiguiente.setDisable(false);
+            clicksEnSiguiente = 0;
         }
-        if (clicksEnSiguiente >=1) {
-            btnAnterior.setDisable(false);
-        }
+        btnAnterior.setDisable(indiceTablillaActual == 0);
+    }
 
-        String[] tablillaActual = Arrays.copyOf(arImagenes, arImagenes.length);
-        todasTablillas.add(tablillaActual);
-
-        //copiar la tablilla Actual como tablilla anterior
-        //tablillaAnterior = Arrays.copyOf(arImagenes, arImagenes.length);
-
-        //mezclar el arreglo de imagenes aleatoriamente
-        List<String> listaImagenes = Arrays.asList(arImagenes);
-        Collections.shuffle(listaImagenes);
-        arImagenes = listaImagenes.toArray(new String[0]);
-
-        // Actualizar las imágenes en los botones
+    private void mostrarTablilla(int indiceTablillaActual) {
+        String[] tablilla = tablillasPredefinidas[indiceTablillaActual];
         int pos = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                ImageView imv;
                 try {
-                    InputStream stream = new FileInputStream("src/main/java/com/example/tap2023/imagenes/" + arImagenes[pos]);
+                    InputStream stream = new FileInputStream("src/main/java/com/example/tap2023/imagenes/" + tablilla[pos]);
                     Image imgCartaP = new Image(stream);
-                    //ImageView imv = new ImageView(imgCartaP);
-                    imv = new ImageView(imgCartaP);
+                    ImageView imv = new ImageView(imgCartaP);
                     arBtnTablilla[i][j].setGraphic(imv);
                     pos++;
+                    imv.setFitHeight(120);
+                    imv.setFitWidth(80);
+                    imv.setPreserveRatio(true);
+                    imv.setSmooth(true);
                 } catch (FileNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                imv.setFitHeight(120);
-                imv.setFitWidth(80);
-                imv.setPreserveRatio(true); // Mantener la proporción de la imagen
-                imv.setSmooth(true); // Mejorar la calidad de visualización
             }
         }
     }
-
 
     private void limpiarTablilla() {
         for (int i = 0; i < 4; i++) {
@@ -208,7 +223,7 @@ public class Loteria extends Stage {
             public void run() {
                 Platform.runLater(() -> cambiarImagenAleatoria());
             }
-        }, 0, 3000);
+        }, 0, 1000);
     }
 
     private void cambiarImagenAleatoria() {
@@ -234,7 +249,14 @@ public class Loteria extends Stage {
         if (imagenesMostradas.size() == arImagenes.length) {
             imagenesMostradas.clear();
         }
-        //int indiceAleatorio = rand.nextInt(arImagenes.length);
+
+        // Incrementar el contador de cartas mostradas
+        cartasMostradas++;
+
+        // Verificar si se han mostrado todas las cartas sin marcar todos los botones
+        if (cartasMostradas == arImagenes.length && botonesMarcados < 16) {
+            mostrarMensajePerdedor();
+        }
 
         try {
             InputStream stream = new FileInputStream("src/main/java/com/example/tap2023/imagenes/" + arImagenes[indiceAleatorio]);
@@ -243,6 +265,19 @@ public class Loteria extends Stage {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void mostrarMensajePerdedor() {
+        // Detener el temporizador si está en funcionamiento
+        detenerTemporizador();
+
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("¡Has perdido!");
+            alert.setHeaderText(null);
+            alert.setContentText("Has perdido el juego.");
+            alert.showAndWait();
+        });
     }
 
 
