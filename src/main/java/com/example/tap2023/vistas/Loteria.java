@@ -223,7 +223,7 @@ public class Loteria extends Stage {
             public void run() {
                 Platform.runLater(() -> cambiarImagenAleatoria());
             }
-        }, 0, 1000);
+        }, 0, 3000);
     }
 
     private void cambiarImagenAleatoria() {
