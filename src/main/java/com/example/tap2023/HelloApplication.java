@@ -1,5 +1,6 @@
 package com.example.tap2023;
 
+import com.example.tap2023.modelos.Conexion;
 import com.example.tap2023.vistas.Calculadora;
 import com.example.tap2023.vistas.Loteria;
 import com.example.tap2023.vistas.Restaurante;
@@ -56,6 +57,7 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        connectToDB();
         CrearUI();
         borderPane = new BorderPane();
         borderPane.setTop(menuBar);
@@ -69,6 +71,10 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
+    public void connectToDB(){
+        Conexion.createConnection();
+        System.out.println("Conexión establecida");
+    }
 
 
     public static void main(String[] args) {

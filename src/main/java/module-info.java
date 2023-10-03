@@ -7,4 +7,5 @@ module com.example.tap2023 {
     exports com.example.tap2023;
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
+    requires mariadb.java.client;
 }
