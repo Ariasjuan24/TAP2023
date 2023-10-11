@@ -10,8 +10,24 @@ import java.util.List;
 
 public class CategoriasDAO {
 
-    public int idCategoria; //era private
-    public String nomCategoria; //era private
+    private int idCategoria; //era private
+    private String nomCategoria; //era private
+
+    public int getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(int idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
+    public String getNomCategoria() {
+        return nomCategoria;
+    }
+
+    public void setNomCategoria(String nomCategoria) {
+        this.nomCategoria = nomCategoria;
+    }
 
     public void INSERTAR(){
         try {
