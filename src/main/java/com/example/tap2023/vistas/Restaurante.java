@@ -19,8 +19,10 @@ public class Restaurante extends Stage {
 
     private VBox vBox;
     private TableView<CategoriasDAO> tbvCategorias;
+    private TableView<ClientesDAO> tbvClientes;
     private Button btnAgregar;
     private CategoriasDAO categoriasDAO; //si quiero usar una clase de otra parte solo la instanciamos
+    private ClientesDAO clientesDAO;
 
     public Restaurante() {
         CrearUI();
@@ -45,11 +47,14 @@ public class Restaurante extends Stage {
 
         categoriasDAO = new CategoriasDAO();
         tbvCategorias = new TableView<CategoriasDAO>();
+        clientesDAO = new ClientesDAO();
+        tbvClientes = new TableView<ClientesDAO>();
         CrearTable();
         btnAgregar = new Button("Agregar");
         btnAgregar.getStyleClass().setAll("btn","btn-success");
-        btnAgregar.setOnAction(event -> new CategoriaForm(tbvCategorias));
-        vBox = new VBox(tbvCategorias, btnAgregar);
+        btnAgregar.setOnAction(event -> new CategoriaForm(tbvCategorias, null));
+        btnAgregar.setOnAction(event -> new ClienteForm(tbvClientes, null));
+        vBox = new VBox(tbvCategorias, btnAgregar, tbvClientes);
     }
 
     private void CrearTable(){// generamos este metodo porque hay varias instrucciones que tenemos que definir
@@ -63,13 +68,59 @@ public class Restaurante extends Stage {
         tbcEditar.setCellFactory(
                 new Callback<TableColumn<CategoriasDAO, String>, TableCell<CategoriasDAO, String>>() {
                     @Override
-                    public TableCell<CategoriasDAO, String> call(TableColumn<CategoriasDAO, String> categoriasDAOStringTableColumn) {
-                        return new ButtonCell();
+                    public TableCell<CategoriasDAO, String> call(TableColumn<CategoriasDAO, String> param) {
+                        return new ButtonCell(1);
                     }
                 }
         );
 
-        tbvCategorias.getColumns().addAll(tbcIdCat, tbcNomCat, tbcEditar);
+        TableColumn<CategoriasDAO, String> tbcEliminar = new TableColumn<CategoriasDAO, String>("ELIMINAR");
+        tbcEliminar.setCellFactory(
+                new Callback<TableColumn<CategoriasDAO, String>, TableCell<CategoriasDAO, String>>() {
+                    @Override
+                    public TableCell<CategoriasDAO, String> call(TableColumn<CategoriasDAO, String> param) {
+                        return new ButtonCell(2);
+                    }
+                }
+        );
+
+
+
+        tbvCategorias.getColumns().addAll(tbcIdCat, tbcNomCat, tbcEditar, tbcEliminar);
         tbvCategorias.setItems(categoriasDAO.LISTARCATEGORIAS());
     }
+
+    private void CrearTable1(){// generamos este metodo porque hay varias instrucciones que tenemos que definir
+        TableColumn<ClientesDAO, Integer> tbcIdCli = new TableColumn<>("ID");
+        tbcIdCli.setCellValueFactory(new PropertyValueFactory<>("idCliente"));
+
+        TableColumn<ClientesDAO, Integer> tbcNomCli = new TableColumn<>("Cliente");
+        tbcNomCli.setCellValueFactory(new PropertyValueFactory<>("nombreCliente"));
+
+        TableColumn<ClientesDAO, String> tbcEditar = new TableColumn<ClientesDAO, String>("EDITAR");
+        tbcEditar.setCellFactory(
+                new Callback<TableColumn<ClientesDAO, String>, TableCell<ClientesDAO, String>>() {
+                    @Override
+                    public TableCell<ClientesDAO, String> call(TableColumn<ClientesDAO, String> param) {
+                        return new ButtonCell(1);
+                    }
+                }
+        );
+
+        TableColumn<ClientesDAO, String> tbcEliminar = new TableColumn<ClientesDAO, String>("ELIMINAR");
+        tbcEliminar.setCellFactory(
+                new Callback<TableColumn<ClientesDAO, String>, TableCell<ClientesDAO, String>>() {
+                    @Override
+                    public TableCell<ClientesDAO, String> call(TableColumn<ClientesDAO, String> param) {
+                        return new ButtonCell(2);
+                    }
+                }
+        );
+
+
+
+        tbvClientes.getColumns().addAll(tbcIdCli, tbcNomCli, tbcEditar, tbcEliminar);
+        tbvClientes.setItems(clientesDAO.LISTARCATEGORIAS());
+    }
+
 }
