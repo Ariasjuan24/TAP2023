@@ -2,10 +2,7 @@ package com.example.tap2023;
 
 import com.example.tap2023.components.Hilo;
 import com.example.tap2023.modelos.Conexion;
-import com.example.tap2023.vistas.Calculadora;
-import com.example.tap2023.vistas.Loteria;
-import com.example.tap2023.vistas.PistaAtletismo;
-import com.example.tap2023.vistas.Restaurante;
+import com.example.tap2023.vistas.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -21,7 +18,7 @@ public class HelloApplication extends Application {
     private BorderPane borderPane;
     private MenuBar menuBar;
     private Menu menuParcial1, menuParcial2, menuSalir;
-    private MenuItem mitCalculadora, mitLoteria, mitSalir, mitRestaurante, mitPista;
+    private MenuItem mitCalculadora, mitLoteria, mitSalir, mitRestaurante, mitPista, mitImpresion;
 
     private void CrearUI(){
         mitCalculadora = new MenuItem("Calculadora");
@@ -37,8 +34,10 @@ public class HelloApplication extends Application {
         mitRestaurante.setOnAction((event)-> new Restaurante());
         mitPista = new MenuItem("Pista Atletismo");
         mitPista.setOnAction(event -> new PistaAtletismo());
+        mitImpresion = new MenuItem("Simulador Impresión");
+        mitImpresion.setOnAction(event -> new SimuladorImpresion());
         menuParcial2 = new Menu("Parcial 2");
-        menuParcial2.getItems().addAll(mitRestaurante, mitPista);
+        menuParcial2.getItems().addAll(mitRestaurante, mitPista, mitImpresion);
 
         menuSalir = new Menu("Mas opciones");
         mitSalir = new MenuItem("Salir");

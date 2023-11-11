@@ -20,6 +20,7 @@ public class PistaAtletismo extends Stage {
         this.setTitle("Pista de Atletismo :)");
         this.setScene(escena);
         this.show();
+
     }
 
     private void CrearUI() {
