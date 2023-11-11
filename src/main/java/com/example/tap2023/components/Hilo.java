@@ -7,7 +7,7 @@ import java.util.Random;
 public class Hilo extends Thread {
     private ProgressBar pgbCorredor;
     public Hilo(String nombre, ProgressBar pgb){
-        super(nombre); //super para mandar a llamar algo que existe en la clase padre, es lo mismo que: this.setName(nombre)
+        this.setName(nombre); //super para mandar a llamar algo que existe en la clase padre, es lo mismo que: this.setName(nombre)
         this.pgbCorredor = pgb;
     }
 

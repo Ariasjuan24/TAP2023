@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
-public class CategoriasDAO {
+public class CategoriasDAO extends ElementoRestaurante {
 
     private int idCategoria; //era private
     private String nomCategoria; //era private

@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 public class PistaAtletismo extends Stage {
     private ProgressBar[] pgbCorredores = new ProgressBar[6];
-    private Hilo[] thrCorredores = new Hilo[5];
+    private Hilo[] thrCorredores = new Hilo[6];
     private VBox vBox;
     private Button btnIniciar;
     private Scene escena;

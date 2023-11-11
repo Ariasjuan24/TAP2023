@@ -30,7 +30,6 @@ public class HelloApplication extends Application {
         mitLoteria.setOnAction((event)-> new Loteria());
 
 
-
         menuParcial1 = new Menu("Parcial 1");
         menuParcial1.getItems().addAll(mitCalculadora, mitLoteria);
 
