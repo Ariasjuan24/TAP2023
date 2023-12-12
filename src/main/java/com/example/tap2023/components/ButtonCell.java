@@ -50,26 +50,28 @@ public class ButtonCell<T extends ElementoRestaurante> extends TableCell<T, Stri
 
     private void accionBoton() {
         tbvCategorias = (TableView<CategoriasDAO>) ButtonCell.this.getTableView();
-        objCat = tbvCategorias.getItems().get(ButtonCell.this.getIndex());
+        Object selectedItem = tbvCategorias.getSelectionModel().getSelectedItem();
 
-        if (this.opc ==1) {
-            new CategoriaForm(tbvCategorias, objCat);
-        }
-        else {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Tópicos Avanzados de Programación");
-            alert.setHeaderText("Confirmación del Sistema");
-            alert.setContentText("¿Deseas eliminar la categoría?");
+        if (selectedItem instanceof CategoriasDAO) {
+            objCat = (CategoriasDAO) selectedItem;
+            if (this.opc == 1) {
+                new CategoriaForm((TableView<CategoriasDAO>) tbvCategorias, objCat);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Tópicos Avanzados de Programación");
+                alert.setHeaderText("Confirmación del Sistema");
+                alert.setContentText("¿Deseas eliminar la categoría?");
 
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                objCat.ELIMINAR();
-                tbvCategorias.setItems(objCat.LISTARCATEGORIAS());
-                tbvCategorias.refresh();
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    objCat.ELIMINAR();
+                    ((TableView<CategoriasDAO>) tbvCategorias).setItems(objCat.LISTARCATEGORIAS());
+                    ((TableView<CategoriasDAO>) tbvCategorias).refresh();
+                }
             }
         }
-
     }
+
 
     @Override
     protected void updateItem(String item, boolean empty) {

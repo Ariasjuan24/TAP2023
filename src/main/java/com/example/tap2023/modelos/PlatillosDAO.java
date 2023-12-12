@@ -11,7 +11,7 @@ import java.sql.Statement;
 public class PlatillosDAO extends ElementoRestaurante {
     private int idPlatillo;
     private String nomPlatillo;
-    private int precio;
+    private double precio;
     private int idCategoria;
 
 
@@ -29,7 +29,6 @@ public class PlatillosDAO extends ElementoRestaurante {
 
     private int cantidad; // Agrega esta propiedad
 
-    // ... otros métodos ...
 
     public int getCantidad() {
         return cantidad;
@@ -51,7 +50,7 @@ public class PlatillosDAO extends ElementoRestaurante {
         return precio;
     }
 
-    public void setPrecio(int precio) {
+    public void setPrecio(double precio) {
         this.precio = precio;
     }
     private CategoriasDAO categoria; // Agregar una referencia a la clase CategoriasDAO

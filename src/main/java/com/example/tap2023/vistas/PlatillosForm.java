@@ -1,5 +1,6 @@
 package com.example.tap2023.vistas;
 
+import com.example.tap2023.modelos.CategoriasDAO;
 import com.example.tap2023.modelos.PlatillosDAO;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -13,6 +14,7 @@ public class PlatillosForm extends Stage {
     private HBox hBox;
     private TextField txtNamePla;
     private TextField txtPrecio;
+    private ComboBox<CategoriasDAO> cmbCategorias; // Agregado ComboBox para seleccionar categorías
     private Button btnGuardar;
     private PlatillosDAO objPlaDAO;
     private TableView<PlatillosDAO> tbvPlatillos;
@@ -21,9 +23,10 @@ public class PlatillosForm extends Stage {
         this.tbvPlatillos = tbvPla;
         this.objPlaDAO = objPlaDAO == null ? new PlatillosDAO() : objPlaDAO;
         CrearUI();
+
         // Crear la columna para mostrar idCategoria
         TableColumn<PlatillosDAO, Integer> colIdCategoria = new TableColumn<>("ID Categoría");
-        colIdCategoria.setCellValueFactory(new PropertyValueFactory<>("idCategoria")); // Asegúrate de que tu clase PlatillosDAO tenga un método getIdCategoria()
+        colIdCategoria.setCellValueFactory(new PropertyValueFactory<>("idCategoria"));
 
         // Agregar la columna a la TableView
         tbvPlatillos.getColumns().addAll(colIdCategoria);
@@ -41,10 +44,43 @@ public class PlatillosForm extends Stage {
         txtPrecio = new TextField();
         txtPrecio.setText(Double.toString(objPlaDAO.getPrecio()));
 
+        cmbCategorias = new ComboBox<>();
+        cmbCategorias.setItems(new CategoriasDAO().LISTARCATEGORIAS());
+        cmbCategorias.setCellFactory(param -> new ListCell<CategoriasDAO>() {
+            @Override
+            protected void updateItem(CategoriasDAO item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null || item.getNomCategoria() == null) {
+                    setText(null);
+                } else {
+                    setText(item.getNomCategoria());
+                }
+            }
+        });
+        cmbCategorias.setButtonCell(new ListCell<CategoriasDAO>() {
+            @Override
+            protected void updateItem(CategoriasDAO item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null || item.getNomCategoria() == null) {
+                    setText(null);
+                } else {
+                    setText(item.getNomCategoria());
+                }
+            }
+        });
+
         btnGuardar = new Button("Guardar");
         btnGuardar.setOnAction(event -> guardarPlatillo());
+        //Eliminar la Columna ID Categoria si ya existe en la tabla
+        TableColumn<PlatillosDAO, ?> existingColumn = tbvPlatillos.getColumns().stream()
+                .filter(col -> "ID Categoría".equals(col.getText()))
+                .findFirst()
+                .orElse(null);
+        if (existingColumn != null) {
+            tbvPlatillos.getColumns().remove(existingColumn);
+        }
 
-        hBox = new HBox(txtNamePla, btnGuardar);
+        hBox = new HBox(txtNamePla, txtPrecio, cmbCategorias, btnGuardar); // Agregado ComboBox a la interfaz
 
         hBox.setSpacing(10);
         hBox.setPadding(new Insets(10));
@@ -52,13 +88,30 @@ public class PlatillosForm extends Stage {
 
     private void guardarPlatillo() {
         objPlaDAO.setNomPlatillo(txtNamePla.getText());
-        objPlaDAO.setPrecio(Double.parseDouble(txtPrecio.getText())); // Convierte el texto a double
-        if (objPlaDAO.getIdPlatillo() > 0)
-            objPlaDAO.ACTUALIZAR();
-        else
+        objPlaDAO.setPrecio(Double.parseDouble(txtPrecio.getText()));
+
+        // Verifica si se ha seleccionado una categoría
+        CategoriasDAO categoriaSeleccionada = cmbCategorias.getValue();
+        if (categoriaSeleccionada != null) {
+            objPlaDAO.setCategoria(categoriaSeleccionada);
+
+            // Inserta el nuevo platillo en la base de datos
             objPlaDAO.INSERTAR();
-        tbvPlatillos.setItems(PlatillosDAO.listarPlatillosDesdeBaseDeDatos());
-        tbvPlatillos.refresh();
-        this.close();
+
+            // Actualiza la tabla después de insertar el platillo
+            tbvPlatillos.setItems(PlatillosDAO.listarPlatillosDesdeBaseDeDatos());
+            tbvPlatillos.refresh();
+
+            this.close();
+        } else {
+            // Muestra un mensaje indicando que se debe seleccionar una categoría
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Advertencia");
+            alert.setHeaderText("Selección de Categoría");
+            alert.setContentText("Debes seleccionar una categoría para el platillo.");
+            alert.showAndWait();
+        }
     }
+
+
 }
