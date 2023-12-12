@@ -2,6 +2,7 @@ package com.example.tap2023.vistas;
 
 import com.example.tap2023.components.ButtonCell;
 import com.example.tap2023.modelos.CategoriasDAO;
+import com.example.tap2023.modelos.ElementoRestaurante;
 import com.example.tap2023.modelos.PlatillosDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,19 +23,19 @@ public class Restaurante extends Stage {
     private TableView<CategoriasDAO> tbvCategorias;
     private TableView<PlatillosDAO> tbvPlatillos;
     private Button btnAgregar, btnAgregar2, btnRealizarPedido;
-    private CategoriasDAO categoriasDAO; //si quiero usar una clase de otra parte solo la instanciamos
+    private CategoriasDAO categoriasDAO;
     private PlatillosDAO platillosDAO;
     private ObservableList<PlatillosDAO> pedidoList;
 
     public Restaurante() {
         CrearUI();
         Panel panel = new Panel("Taquería el Tecno");
-        panel.getStyleClass().add("panel-primary");                            //(2)
+        panel.getStyleClass().add("panel-primary");
         BorderPane content = new BorderPane();
         content.setPadding(new Insets(20));
         Button button = new Button("Hello BootstrapFX");
-        button.getStyleClass().setAll("btn","btn-success");
-        //(2)
+        button.getStyleClass().setAll("btn", "btn-success");
+
         btnRealizarPedido = new Button("Realizar Pedido");
         btnRealizarPedido.getStyleClass().setAll("btn", "btn-success");
         btnRealizarPedido.setOnAction(event -> mostrarPantallaPedido());
@@ -46,41 +47,42 @@ public class Restaurante extends Stage {
         panel.setBody(content);
 
         Scene scene = new Scene(panel);
-        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());       //(3)
+        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
 
         this.setTitle("BootstrapFX");
         this.setScene(scene);
         this.sizeToScene();
         this.show();
     }
-    private void CrearUI(){
 
+    private void CrearUI() {
         categoriasDAO = new CategoriasDAO();
         tbvCategorias = new TableView<CategoriasDAO>();
         platillosDAO = new PlatillosDAO();
         tbvPlatillos = new TableView<PlatillosDAO>();
         CrearTable();
         btnAgregar = new Button("Agregar");
-        btnAgregar.getStyleClass().setAll("btn","btn-success");
+        btnAgregar.getStyleClass().setAll("btn", "btn-success");
         btnAgregar2 = new Button("Agregar");
-        btnAgregar2.getStyleClass().setAll("btn","btn-success");
+        btnAgregar2.getStyleClass().setAll("btn", "btn-success");
         btnAgregar.setOnAction(event -> new CategoriaForm(tbvCategorias, null));
         btnAgregar2.setOnAction(event -> new PlatillosForm(tbvPlatillos, null));
         vBox = new VBox(tbvCategorias, btnAgregar, tbvPlatillos, btnAgregar2);
     }
+
     private void mostrarPantallaPedido() {
         // Abre una nueva ventana para gestionar el pedido
         PedidoForm pedidoForm = new PedidoForm(pedidoList);
     }
 
-    private void CrearTable(){// generamos este metodo porque hay varias instrucciones que tenemos que definir
+    private void CrearTable() {
         TableColumn<CategoriasDAO, Integer> tbcIdCat = new TableColumn<>("ID");
         tbcIdCat.setCellValueFactory(new PropertyValueFactory<>("idCategoria"));
 
-        TableColumn<CategoriasDAO, Integer> tbcNomCat = new TableColumn<>("Categoria");
+        TableColumn<CategoriasDAO, String> tbcNomCat = new TableColumn<>("Categoria");
         tbcNomCat.setCellValueFactory(new PropertyValueFactory<>("nomCategoria"));
 
-        TableColumn<CategoriasDAO, String> tbcEditar = new TableColumn<CategoriasDAO, String>("EDITAR");
+        TableColumn<CategoriasDAO, String> tbcEditar = new TableColumn<>("EDITAR");
         tbcEditar.setCellFactory(
                 new Callback<TableColumn<CategoriasDAO, String>, TableCell<CategoriasDAO, String>>() {
                     @Override
@@ -90,7 +92,7 @@ public class Restaurante extends Stage {
                 }
         );
 
-        TableColumn<CategoriasDAO, String> tbcEliminar = new TableColumn<CategoriasDAO, String>("ELIMINAR");
+        TableColumn<CategoriasDAO, String> tbcEliminar = new TableColumn<>("ELIMINAR");
         tbcEliminar.setCellFactory(
                 new Callback<TableColumn<CategoriasDAO, String>, TableCell<CategoriasDAO, String>>() {
                     @Override
@@ -112,7 +114,10 @@ public class Restaurante extends Stage {
         TableColumn<PlatillosDAO, Double> tbcPrecio = new TableColumn<>("Precio");
         tbcPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
 
-        TableColumn<PlatillosDAO, String> tbcEditarPlatillo = new TableColumn<PlatillosDAO, String>("EDITAR");
+        TableColumn<PlatillosDAO, Integer> tbcIdCategoria = new TableColumn<>("ID Categoría");
+        tbcIdCategoria.setCellValueFactory(new PropertyValueFactory<>("idCategoria"));
+
+        TableColumn<PlatillosDAO, String> tbcEditarPlatillo = new TableColumn<>("EDITAR");
         tbcEditarPlatillo.setCellFactory(
                 new Callback<TableColumn<PlatillosDAO, String>, TableCell<PlatillosDAO, String>>() {
                     @Override
@@ -122,8 +127,7 @@ public class Restaurante extends Stage {
                 }
         );
 
-        //Platillos
-        TableColumn<PlatillosDAO, String> tbcEliminarPlatillo = new TableColumn<PlatillosDAO, String>("ELIMINAR");
+        TableColumn<PlatillosDAO, String> tbcEliminarPlatillo = new TableColumn<>("ELIMINAR");
         tbcEliminarPlatillo.setCellFactory(
                 new Callback<TableColumn<PlatillosDAO, String>, TableCell<PlatillosDAO, String>>() {
                     @Override
@@ -132,15 +136,8 @@ public class Restaurante extends Stage {
                     }
                 }
         );
-        // Dentro del método CrearTable
-        TableColumn<PlatillosDAO, Integer> tbcIdCategoria = new TableColumn<>("ID Categoría");
-        tbcIdCategoria.setCellValueFactory(new PropertyValueFactory<>("idCategoria"));
-
 
         tbvPlatillos.getColumns().addAll(tbcIdPlatillo, tbcNomPlatillo, tbcPrecio, tbcIdCategoria, tbcEditarPlatillo, tbcEliminarPlatillo);
         tbvPlatillos.setItems(platillosDAO.listarPlatillosDesdeBaseDeDatos());
     }
-
-    }
-
-
+}

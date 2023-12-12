@@ -5,79 +5,65 @@ import com.example.tap2023.modelos.ElementoRestaurante;
 import com.example.tap2023.modelos.PlatillosDAO;
 import com.example.tap2023.vistas.CategoriaForm;
 import com.example.tap2023.vistas.PlatillosForm;
-import javafx.scene.control.*;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableView;
+import javafx.util.Callback;
+import javafx.scene.control.ButtonType;
+
 
 import java.util.Optional;
 
 public class ButtonCell<T extends ElementoRestaurante> extends TableCell<T, String> {
-    private Button btnCelda, btnCelda1;
+    private Button btnCelda;
     private int opc;
-    private TableView<CategoriasDAO> tbvCategorias;
-    private CategoriasDAO objCat;
-    private TableView<PlatillosDAO> tbvPlatillos;
-    private PlatillosDAO objPla;
+    private TableView<T> tableView;
 
-    public ButtonCell(int opc, TableView<PlatillosDAO> tbvPlatillos){
+    public ButtonCell(int opc, TableView<T> tableView) {
         this.opc = opc;
+        this.tableView = tableView;
         String txtBtn = this.opc == 1 ? "Editar" : "Eliminar";
         btnCelda = new Button(txtBtn);
-        btnCelda1 = new Button(txtBtn);
         btnCelda.setOnAction(event -> accionBoton());
-        btnCelda1.setOnAction(event -> accionBoton1());
-    }
-
-    private void accionBoton1() {
-        tbvPlatillos = (TableView<PlatillosDAO>) ButtonCell.this.getTableView();
-        objPla = tbvPlatillos.getItems().get(ButtonCell.this.getIndex());
-
-        if (this.opc ==1) {
-            new PlatillosForm(tbvPlatillos, objPla);
-        }
-        else {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Tópicos Avanzados de Programación");
-            alert.setHeaderText("Confirmación del Sistema");
-            alert.setContentText("¿Deseas eliminar el Platillo?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                objPla.ELIMINAR();
-                tbvPlatillos.setItems(objPla.listarPlatillosDesdeBaseDeDatos());
-                tbvPlatillos.refresh();
-            }
-        }
     }
 
     private void accionBoton() {
-        tbvCategorias = (TableView<CategoriasDAO>) ButtonCell.this.getTableView();
-        Object selectedItem = tbvCategorias.getSelectionModel().getSelectedItem();
-
-        if (selectedItem instanceof CategoriasDAO) {
-            objCat = (CategoriasDAO) selectedItem;
-            if (this.opc == 1) {
-                new CategoriaForm((TableView<CategoriasDAO>) tbvCategorias, objCat);
-            } else {
+        T obj = getTableView().getItems().get(getIndex());
+        if (obj != null) {
+            if (opc == 1) {
+                if (obj instanceof CategoriasDAO) {
+                    new CategoriaForm((TableView<CategoriasDAO>) tableView, (CategoriasDAO) obj);
+                } else if (obj instanceof PlatillosDAO) {
+                    new PlatillosForm((TableView<PlatillosDAO>) tableView, (PlatillosDAO) obj);
+                }
+            } else if (opc == 2) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Tópicos Avanzados de Programación");
+                alert.setTitle("Confirmación del Sistema");
                 alert.setHeaderText("Confirmación del Sistema");
-                alert.setContentText("¿Deseas eliminar la categoría?");
-
+                alert.setContentText("¿Deseas eliminar el elemento?");
                 Optional<ButtonType> result = alert.showAndWait();
-                if (result.get() == ButtonType.OK) {
-                    objCat.ELIMINAR();
-                    ((TableView<CategoriasDAO>) tbvCategorias).setItems(objCat.LISTARCATEGORIAS());
-                    ((TableView<CategoriasDAO>) tbvCategorias).refresh();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    if (obj instanceof CategoriasDAO) {
+                        ((CategoriasDAO) obj).ELIMINAR();
+                        tableView.setItems((ObservableList<T>) ((CategoriasDAO) obj).LISTARCATEGORIAS());
+                    } else if (obj instanceof PlatillosDAO) {
+                        ((PlatillosDAO) obj).ELIMINAR();
+                        tableView.setItems((ObservableList<T>) ((PlatillosDAO) obj).listarPlatillosDesdeBaseDeDatos());
+                    }
                 }
             }
         }
     }
 
-
     @Override
     protected void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
-        if ( !empty ){
-            this.setGraphic(btnCelda);
+        if (!empty) {
+            setGraphic(btnCelda);
+        } else {
+            setGraphic(null);
         }
     }
 }

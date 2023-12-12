@@ -95,8 +95,13 @@ public class PlatillosForm extends Stage {
         if (categoriaSeleccionada != null) {
             objPlaDAO.setCategoria(categoriaSeleccionada);
 
-            // Inserta el nuevo platillo en la base de datos
-            objPlaDAO.INSERTAR();
+            if (objPlaDAO.getIdPlatillo() == 0) {
+                // Inserta el nuevo platillo en la base de datos si es un platillo nuevo
+                objPlaDAO.INSERTAR();
+            } else {
+                // Actualiza el platillo existente en la base de datos
+                objPlaDAO.ACTUALIZAR();
+            }
 
             // Actualiza la tabla después de insertar el platillo
             tbvPlatillos.setItems(PlatillosDAO.listarPlatillosDesdeBaseDeDatos());

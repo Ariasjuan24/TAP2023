@@ -37,5 +37,4 @@ public class ElementoRestaurante {
         this.precio = precio;
     }
 
-    // Agrega otros métodos comunes que puedas necesitar en tus clases derivadas.
 }
